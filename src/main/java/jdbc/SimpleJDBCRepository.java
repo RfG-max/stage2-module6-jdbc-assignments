@@ -27,13 +27,13 @@ public class SimpleJDBCRepository {
     private static final String findUserByNameSQL = "SELECT * FROM myusers WHERE firstname = ?;";
     private static final String findAllUserSQL = "SELECT * FROM myusers;";
 
-    public Long createUser (String firstname, String lastname, int age) {
+    public Long createUser (User user) {
         try {
             connection = CustomDataSource.getInstance().getConnection();
             ps = connection.prepareStatement(createUserSQL);
-            ps.setString(1, firstname);
-            ps.setString(2, lastname);
-            ps.setInt(3, age);
+            ps.setString(1, user.getFirstName());
+            ps.setString(2, user.getLastName());
+            ps.setInt(3, user.getAge());
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 return rs.getLong("id");
@@ -97,16 +97,16 @@ public class SimpleJDBCRepository {
         return users;
     }
 
-    public User updateUser(Long userId, String firstname, String lastname, int age) {
+    public User updateUser(User user) {
         try {
             connection = CustomDataSource.getInstance().getConnection();
             ps = connection.prepareStatement(updateUserSQL);
-            ps.setString(1, firstname);
-            ps.setString(2, lastname);
-            ps.setInt(3, age);
-            ps.setLong(4, userId);
+            ps.setString(1, user.getFirstName());
+            ps.setString(2, user.getLastName());
+            ps.setInt(3, user.getAge());
+            ps.setLong(4, user.getId());
             ps.executeUpdate();
-            return findUserById(userId);
+            return findUserById(user.getId());
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
@@ -115,7 +115,7 @@ public class SimpleJDBCRepository {
         return null;
     }
 
-    private void deleteUser(Long userId) {
+    public void deleteUser(Long userId) {
         try {
             connection = CustomDataSource.getInstance().getConnection();
             ps = connection.prepareStatement(deleteUser);
